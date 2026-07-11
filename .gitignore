@@ -1,0 +1,15 @@
+# Local specifications & docs
+Whimsy_Forest_English_設計交付完整規格.docx
+
+# Gemini configuration
+.gemini/
+antigravity/
+
+# Temporary files
+docx_temp/
+docx_text.txt
+extract_docx.js
+
+# OS files
+.DS_Store
+Thumbs.db
