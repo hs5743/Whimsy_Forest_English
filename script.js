@@ -1466,6 +1466,16 @@ function syncSpeakerImages(){
 function renderSpeechStack(){
   els.speechStack.innerHTML = "";
   syncSpeakerImages();
+  
+  const currentLineObj = currentLine();
+  if (state.lesson && currentLineObj) {
+    els.speakerImageA.parentElement.classList.toggle("active-speaker", currentLineObj.speaker === "A");
+    els.speakerImageB.parentElement.classList.toggle("active-speaker", currentLineObj.speaker === "B");
+  } else {
+    els.speakerImageA.parentElement.classList.remove("active-speaker");
+    els.speakerImageB.parentElement.classList.remove("active-speaker");
+  }
+
   if(!state.lesson){
     els.speechStack.innerHTML = `<div class="speech-bubble"><span class="speaker-label">A:</span><div><div class="line-main">請先從課程卡片選擇一堂課</div><div class="line-sub">Choose a lesson to begin.</div></div><span>🌟</span></div>`;
     els.dialogueCounter.textContent = "1 / 4";
