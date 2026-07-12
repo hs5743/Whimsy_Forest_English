@@ -1171,18 +1171,58 @@ const COURSE_DATA = {
 };
 
 
+const safeGetNumber = (key, fallback) => {
+  const val = localStorage.getItem(key);
+  if (val === null) return fallback;
+  const num = Number(val);
+  return isNaN(num) ? fallback : num;
+};
+
+const safeGetArray = (key, fallback) => {
+  try {
+    const val = localStorage.getItem(key);
+    if (!val) return fallback;
+    const parsed = JSON.parse(val);
+    return Array.isArray(parsed) ? parsed : fallback;
+  } catch (e) {
+    return fallback;
+  }
+};
+
+const safeGetObject = (key, fallback) => {
+  try {
+    const val = localStorage.getItem(key);
+    if (!val) return fallback;
+    const parsed = JSON.parse(val);
+    return (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) ? parsed : fallback;
+  } catch (e) {
+    return fallback;
+  }
+};
+
+function findLessonById(id){
+  if(!id) return null;
+  for(const grade of grades()){
+    for(const theme of grade.themes){
+      const lesson = theme.lessons.find(l => l.id === id);
+      if(lesson) return {...lesson, _theme: theme};
+    }
+  }
+  return null;
+}
+
 const state = {
-  gradeId: "lower",
-  themeId: null,
+  gradeId: localStorage.getItem("wfv41-gradeId") || "lower",
+  themeId: localStorage.getItem("wfv41-themeId") || null,
   lesson: null,
   lineIndex: 0,
   mode: "listen",
   role: "A",
   showTranslation: false,
-  xp: Number(localStorage.getItem("wfv41-xp") || 0),
-  completed: Number(localStorage.getItem("wfv41-completed") || 0),
-  completedLessons: JSON.parse(localStorage.getItem("wfv41-lessons") || "[]"),
-  badges: JSON.parse(localStorage.getItem("wfv41-badges") || '{"map":false,"listener":false,"speaker":false}')
+  xp: safeGetNumber("wfv41-xp", 0),
+  completed: safeGetNumber("wfv41-completed", 0),
+  completedLessons: safeGetArray("wfv41-lessons", []),
+  badges: safeGetObject("wfv41-badges", {map:false, listener:false, speaker:false})
 };
 
 const $ = id => document.getElementById(id);
@@ -1258,6 +1298,9 @@ function lessonLines(){ return state.lesson?.dialogue || []; }
 function currentLine(){ return lessonLines()[state.lineIndex]; }
 
 function saveState(){
+  localStorage.setItem("wfv41-gradeId", state.gradeId || "");
+  localStorage.setItem("wfv41-themeId", state.themeId || "");
+  localStorage.setItem("wfv41-lessonId", state.lesson ? state.lesson.id : "");
   localStorage.setItem("wfv41-xp", String(state.xp));
   localStorage.setItem("wfv41-completed", String(state.completed));
   localStorage.setItem("wfv41-lessons", JSON.stringify(state.completedLessons));
@@ -1356,6 +1399,8 @@ function renderGradeCards(){
 function selectGrade(id, scroll=true){
   state.gradeId = id;
   state.themeId = null;
+  state.lesson = null;
+  state.lineIndex = 0;
   state.badges.map = true;
   saveState();
   renderGradeContent();
@@ -1778,6 +1823,7 @@ function bindEvents(){
 }
 
 function init(){
+  state.lesson = findLessonById(localStorage.getItem("wfv41-lessonId"));
   renderGradeCards();
   renderGradeContent();
   renderSpeechStack();
