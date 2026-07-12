@@ -75,11 +75,13 @@
 **修改內容**：
 - 🔄 **還原至 v5.0/v5.1 漸進滾動佈局**：移除 v6.0 的多畫面 SPA 與導覽歷史紀錄，完整復原單頁垂直滾動與 Progressive Reveal (漸進解鎖) 機制、Journey Bar 步驟條、吉祥物浮動動畫及漫畫風氣泡框。
 - 🐛 **修復「綠葉鎮」與「大樹城」無法進入問題**：
+  - **卡片點擊區域擴大**：將點擊事件從單一按鈕擴大綁定至整個年級卡片（`.route-card`），並在 CSS 設定 `cursor: pointer` 與將按鈕設定 `pointer-events: none`。這使得點選卡片上任何地方（包括圖片、文字、按鈕）皆能順利進入該村莊/城鎮，大幅改善操作容錯度。
   - **LocalStorage 進度安全解析**：引入 `safeGetNumber`、`safeGetArray` 與 `safeGetObject` 防禦性讀取，避免 `localStorage` 中 `wfv41-lessons` 等欄位因其他版本儲存為非陣列/Null 格式而導致 `includes()` 報錯阻斷腳本執行。
+  - **LocalStorage 儲存防禦保護**：將 `saveState` 完整包裹於 `try-catch` 區塊中，避免因 LocalStorage 寫入限制或額度超出而阻斷 `selectGrade` 的點擊切換邏輯。
   - **年級與主題狀態持久化**：於 `saveState` 中新增儲存 `wfv41-gradeId` 與 `wfv41-themeId`，並於 `init` 時加載，防止頁面重新整理時，年級與地圖解鎖狀態重置為預設的「幼苗村（低年級）」。
   - **切換年級重置課程狀態**：選取新路線時，重置當前正處於練習中的課程及句數，避免跨級渲染對話欄位時出錯。
   - **課程還原優化**：新增 `findLessonById` 輔助函式，支持頁面刷新後自動藉由 lessonId 找回完整 lesson 物件並直接呈現進度。
-- ⚡ **快取旁路處理**：將 `index.html` 內的 `script.js` 引用加上快取破壞參數 `?v=5.1.1`，保證瀏覽器可立即載入最新邏輯。
+- ⚡ **快取旁路處理**：將 `index.html` 內的 `script.js` 引用加上快取破壞參數 `?v=5.2.0`，保證瀏覽器可立即載入最新邏輯。
 
 
 ### v6.0.1 — 2026/07/12（修復版）

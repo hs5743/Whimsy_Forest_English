@@ -1298,13 +1298,17 @@ function lessonLines(){ return state.lesson?.dialogue || []; }
 function currentLine(){ return lessonLines()[state.lineIndex]; }
 
 function saveState(){
-  localStorage.setItem("wfv41-gradeId", state.gradeId || "");
-  localStorage.setItem("wfv41-themeId", state.themeId || "");
-  localStorage.setItem("wfv41-lessonId", state.lesson ? state.lesson.id : "");
-  localStorage.setItem("wfv41-xp", String(state.xp));
-  localStorage.setItem("wfv41-completed", String(state.completed));
-  localStorage.setItem("wfv41-lessons", JSON.stringify(state.completedLessons));
-  localStorage.setItem("wfv41-badges", JSON.stringify(state.badges));
+  try {
+    localStorage.setItem("wfv41-gradeId", state.gradeId || "");
+    localStorage.setItem("wfv41-themeId", state.themeId || "");
+    localStorage.setItem("wfv41-lessonId", state.lesson ? state.lesson.id : "");
+    localStorage.setItem("wfv41-xp", String(state.xp));
+    localStorage.setItem("wfv41-completed", String(state.completed));
+    localStorage.setItem("wfv41-lessons", JSON.stringify(state.completedLessons));
+    localStorage.setItem("wfv41-badges", JSON.stringify(state.badges));
+  } catch (e) {
+    console.warn("LocalStorage save state failed safely:", e);
+  }
 }
 function showToast(message){
   els.toast.textContent = message;
@@ -1391,7 +1395,7 @@ function renderGradeCards(){
         <button class="route-button" type="button">進入 ${grade.village}</button>
       </div>
     `;
-    card.querySelector(".route-button").addEventListener("click",()=>selectGrade(grade.id,true));
+    card.addEventListener("click", () => selectGrade(grade.id, true));
     els.gradeCards.appendChild(card);
   });
 }

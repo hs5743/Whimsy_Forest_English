@@ -546,6 +546,7 @@ section { margin-bottom: 32px; }
   border-radius: var(--radius-xl);
   border: var(--border-white);
   box-shadow: var(--shadow-md);
+  cursor: pointer;
   transition:
     transform 0.28s var(--ease-bounce),
     box-shadow 0.28s ease;
@@ -618,6 +619,7 @@ section { margin-bottom: 32px; }
   border-radius: var(--radius-md);
   color: #fff;
   font-weight: 900;
+  pointer-events: none;
   background: linear-gradient(145deg, var(--green), var(--green-dark));
   box-shadow: 0 5px 0 var(--green-deeper), 0 8px 18px rgba(40, 100, 50, 0.22);
   transition: transform 0.12s ease, box-shadow 0.12s ease;
