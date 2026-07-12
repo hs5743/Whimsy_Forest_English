@@ -8,7 +8,7 @@
   <title>Whimsy Forest English｜童趣森林英語學習樂園 - 國小英語口說對話練習</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Quicksand:wght@500;700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -30,10 +30,38 @@
         <span>⭐ <strong id="headerXp">0</strong> XP</span>
         <span>Lv. <strong id="headerLevel">1</strong></span>
       </div>
+
+      <!-- 學習旅程步驟條 -->
+      <div class="journey-bar" id="journeyBar" aria-label="學習步驟">
+        <div class="jstep jstep-done" data-target="home">
+          <span class="jstep-icon">🌿</span>
+          <span class="jstep-label">踏入森林</span>
+        </div>
+        <span class="jarrow" aria-hidden="true">›</span>
+        <button class="jstep jstep-locked" id="jstep-routeSelector" data-target="routeSelector" type="button">
+          <span class="jstep-icon">①</span>
+          <span class="jstep-label">選擇路線</span>
+        </button>
+        <span class="jarrow" aria-hidden="true">›</span>
+        <button class="jstep jstep-locked" id="jstep-map" data-target="map" type="button">
+          <span class="jstep-icon">②</span>
+          <span class="jstep-label">探索地圖</span>
+        </button>
+        <span class="jarrow" aria-hidden="true">›</span>
+        <button class="jstep jstep-locked" id="jstep-lessons" data-target="lessons" type="button">
+          <span class="jstep-icon">③</span>
+          <span class="jstep-label">選擇課程</span>
+        </button>
+        <span class="jarrow" aria-hidden="true">›</span>
+        <button class="jstep jstep-locked" id="jstep-practice" data-target="practice" type="button">
+          <span class="jstep-icon">④</span>
+          <span class="jstep-label">口說練習</span>
+        </button>
+      </div>
     </header>
 
     <main>
-      <section class="forest-entrance" id="home">
+      <section class="forest-entrance" id="home" data-step="home">
         <div class="sky-cloud cloud-one"></div>
         <div class="sky-cloud cloud-two"></div>
         <div class="tree tree-left" aria-hidden="true">
@@ -94,9 +122,14 @@
             </div>
           </div>
         </div>
+        <!-- 引導學生往下走 -->
+        <div class="hero-scroll-hint" aria-hidden="true">
+          <span>選擇學習路線，開始森林冒險！</span>
+          <span class="scroll-arrow">↓</span>
+        </div>
       </section>
 
-      <section class="route-section" id="routeSelector">
+      <section class="route-section section-locked" id="routeSelector" data-step="routeSelector">
         <div class="section-heading centered">
           <span class="wood-label">CHOOSE YOUR PATH</span>
           <h2>選擇你的森林學習路線</h2>
@@ -105,7 +138,7 @@
         <div class="route-card-grid" id="gradeCards"></div>
       </section>
 
-      <section class="map-section" id="map">
+      <section class="map-section section-locked" id="map" data-step="map">
         <div class="section-heading">
           <div>
             <span class="wood-label">FOREST STORY MAP</span>
@@ -152,7 +185,7 @@
         </div>
       </section>
 
-      <section class="lesson-section" id="lessons">
+      <section class="lesson-section section-locked" id="lessons" data-step="lessons">
         <div class="section-heading">
           <div>
             <span class="wood-label">LESSON CARDS</span>
@@ -169,7 +202,7 @@
         <div class="lesson-card-grid" id="lessonGrid"></div>
       </section>
 
-      <section class="practice-section" id="practice">
+      <section class="practice-section section-locked" id="practice" data-step="practice">
         <div class="section-heading">
           <div>
             <span class="wood-label">SPEAKING COTTAGE</span>

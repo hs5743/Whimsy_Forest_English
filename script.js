@@ -1269,10 +1269,28 @@ function showToast(message){
   clearTimeout(showToast.timer);
   showToast.timer = setTimeout(() => els.toast.classList.remove("show"), 2200);
 }
+function showXpFloater(amount){
+  const el = document.createElement('div');
+  el.className = 'xp-floater';
+  el.textContent = `+${amount} XP`;
+  // Position near the XP display in the sidebar
+  const xpEl = els.xpText;
+  if(xpEl){
+    const rect = xpEl.getBoundingClientRect();
+    el.style.left = (rect.left + rect.width / 2 - 30) + 'px';
+    el.style.top  = (rect.top + window.scrollY - 10) + 'px';
+  } else {
+    el.style.left = '50%';
+    el.style.top  = '50%';
+  }
+  document.body.appendChild(el);
+  el.addEventListener('animationend', () => el.remove());
+}
 function addXp(amount, message){
   state.xp += amount;
   saveState();
   renderProgress();
+  showXpFloater(amount);
   if(message) showToast(`+${amount} XP｜${message}`);
 }
 function markLessonCompleted(){
@@ -1293,7 +1311,10 @@ function renderProgress(){
   els.xpText.textContent = `${xp} / 100 XP`;
   els.progressFill.style.width = `${xp}%`;
   const starCount = Math.min(3, Math.floor(state.completed / 3));
-  [...els.stars.children].forEach((star,i) => star.textContent = i < starCount ? "★" : "☆");
+  [...els.stars.children].forEach((star,i) => {
+    star.textContent = i < starCount ? "★" : "☆";
+    star.classList.toggle('lit', i < starCount);
+  });
   [["map",els.badgeMap],["listener",els.badgeListener],["speaker",els.badgeSpeaker]].forEach(([key,el])=>{
     el.classList.toggle("locked",!state.badges[key]);
     el.classList.toggle("unlocked",!!state.badges[key]);
@@ -1339,7 +1360,12 @@ function selectGrade(id, scroll=true){
   saveState();
   renderGradeContent();
   renderProgress();
-  if(scroll) document.querySelector("#map")?.scrollIntoView({behavior:"smooth",block:"start"});
+  // Unlock the map section on first grade selection
+  if(typeof window.unlockSection === 'function'){
+    window.unlockSection('map', scroll);
+  } else if(scroll){
+    document.querySelector("#map")?.scrollIntoView({behavior:"smooth",block:"start"});
+  }
 }
 
 function renderGradeContent(){
@@ -1367,6 +1393,7 @@ function renderGradeContent(){
   renderLessons();
   renderMapProgress();
   syncSpeakerImages();
+  if(typeof window.refreshReveal === 'function') setTimeout(window.refreshReveal, 50);
 }
 
 function renderMapProgress(){
@@ -1398,10 +1425,16 @@ function renderMapNodes(){
       state.themeId = theme.id;
       renderMapNodes();
       renderLessons();
-      document.querySelector("#lessons")?.scrollIntoView({behavior:"smooth",block:"start"});
+      // Unlock the lessons section on first theme click
+      if(typeof window.unlockSection === 'function'){
+        window.unlockSection('lessons');
+      } else {
+        document.querySelector("#lessons")?.scrollIntoView({behavior:"smooth",block:"start"});
+      }
     });
     els.themeMapNodes.appendChild(btn);
   });
+  if(typeof window.refreshReveal === 'function') setTimeout(window.refreshReveal, 50);
 }
 
 function renderLessons(){
@@ -1453,7 +1486,12 @@ function openLesson(lesson){
   renderTranslation();
   syncModeUI();
   renderSpeechStack();
-  document.querySelector("#practice")?.scrollIntoView({behavior:"smooth",block:"start"});
+  // Unlock the practice section on first lesson open
+  if(typeof window.unlockSection === 'function'){
+    window.unlockSection('practice');
+  } else {
+    document.querySelector("#practice")?.scrollIntoView({behavior:"smooth",block:"start"});
+  }
   showToast(`已開啟：${lesson.zh}`);
 }
 
@@ -1658,7 +1696,16 @@ function nextLine(){
 
 function bindEvents(){
   document.querySelectorAll("[data-scroll]").forEach(btn=>{
-    btn.addEventListener("click",()=>document.querySelector(btn.dataset.scroll)?.scrollIntoView({behavior:"smooth",block:"start"}));
+    btn.addEventListener("click",()=>{
+      const target = btn.dataset.scroll;
+      // Unlock the section if it's still locked (first visit flow)
+      if(typeof window.unlockSection === 'function'){
+        const id = target.replace('#','');
+        window.unlockSection(id);
+      } else {
+        document.querySelector(target)?.scrollIntoView({behavior:"smooth",block:"start"});
+      }
+    });
   });
   els.showAllThemes.addEventListener("click",()=>{
     state.themeId = null;
@@ -1701,11 +1748,32 @@ function bindEvents(){
     state.completed = 0;
     state.completedLessons = [];
     state.badges = {map:false,listener:false,speaker:false};
+    state.gradeId = "lower";
+    state.themeId = null;
+    state.lesson = null;
     saveState();
     renderProgress();
     renderLessons();
     renderMapNodes();
-    showToast("學習進度已重設");
+
+    // Re-lock sections and reset journey bar
+    ['routeSelector','map','lessons','practice'].forEach(id => {
+      const sec = document.getElementById(id);
+      if(sec){
+        sec.classList.remove('section-unlocking');
+        sec.classList.add('section-locked');
+      }
+      const btn = document.getElementById('jstep-' + id);
+      if(btn) btn.className = 'jstep jstep-locked';
+    });
+    // Mark first step as active again
+    const firstBtn = document.getElementById('jstep-routeSelector');
+    if(firstBtn) firstBtn.className = 'jstep jstep-active';
+    // Show scroll hint again
+    document.querySelector('.hero-scroll-hint')?.classList.remove('hint-hidden');
+    // Scroll to top
+    document.getElementById('home')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    showToast("學習進度已重設，歡迎重新踏入森林！");
   });
 }
 
@@ -1719,3 +1787,155 @@ function init(){
   bindEvents();
 }
 init();
+
+/* ── Progressive Reveal System ── */
+(function initProgressiveReveal(){
+  // Maps sectionId → journey step element id
+  const STEP_MAP = {
+    routeSelector: 'jstep-routeSelector',
+    map:           'jstep-map',
+    lessons:       'jstep-lessons',
+    practice:      'jstep-practice',
+  };
+  // Order for "mark previous as done"
+  const STEP_ORDER = ['routeSelector', 'map', 'lessons', 'practice'];
+
+  /* Update journey-bar visual state */
+  function syncJourneyBar(newlyUnlockedId){
+    const idx = STEP_ORDER.indexOf(newlyUnlockedId);
+    STEP_ORDER.forEach((id, i) => {
+      const el = document.getElementById(STEP_MAP[id]);
+      if(!el) return;
+      const sec = document.getElementById(id);
+      const isLocked = sec ? sec.classList.contains('section-locked') : true;
+      if(isLocked){
+        el.className = 'jstep jstep-locked';
+      } else if(i < idx){
+        el.className = 'jstep jstep-done';
+        el.disabled = false;
+        el.style.cursor = 'pointer';
+      } else if(i === idx){
+        el.className = 'jstep jstep-active';
+        el.disabled = false;
+        el.style.cursor = 'pointer';
+      } else {
+        el.className = 'jstep jstep-done';
+        el.disabled = false;
+        el.style.cursor = 'pointer';
+      }
+    });
+  }
+
+  /* Core unlock function — exposed globally */
+  window.unlockSection = function(sectionId, doScroll = true){
+    const el = document.getElementById(sectionId);
+    if(!el) return;
+
+    const wasLocked = el.classList.contains('section-locked');
+    el.classList.remove('section-locked');
+
+    if(wasLocked){
+      // Trigger section reveal animation
+      el.classList.add('section-unlocking');
+      el.addEventListener('animationend', () => {
+        el.classList.remove('section-unlocking');
+      }, { once: true });
+
+      // Also unlock prior sections silently (without scroll)
+      const myIdx = STEP_ORDER.indexOf(sectionId);
+      STEP_ORDER.slice(0, myIdx).forEach(prevId => {
+        const prevEl = document.getElementById(prevId);
+        if(prevEl && prevEl.classList.contains('section-locked')){
+          prevEl.classList.remove('section-locked');
+          prevEl.classList.add('section-unlocking');
+          prevEl.addEventListener('animationend', () => prevEl.classList.remove('section-unlocking'), { once: true });
+        }
+      });
+    }
+
+    // Update journey bar
+    syncJourneyBar(sectionId);
+
+    // Hide the hero scroll hint once route selector is unlocked
+    if(sectionId === 'routeSelector'){
+      document.querySelector('.hero-scroll-hint')?.classList.add('hint-hidden');
+    }
+
+    // Scroll to section
+    if(doScroll){
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+    }
+
+    // Trigger refreshReveal for newly visible cards
+    if(typeof window.refreshReveal === 'function') setTimeout(window.refreshReveal, 150);
+  };
+
+  /* Journey bar button clicks — scroll to unlocked sections */
+  Object.entries(STEP_MAP).forEach(([secId, btnId]) => {
+    const btn = document.getElementById(btnId);
+    if(!btn) return;
+    btn.addEventListener('click', () => {
+      const sec = document.getElementById(secId);
+      if(sec && !sec.classList.contains('section-locked')){
+        sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+
+  /* Returning user: restore unlock state based on saved progress */
+  if(state.gradeId){
+    // Already selected a grade in a previous session
+    window.unlockSection('routeSelector', false);
+    window.unlockSection('map', false);
+    if(state.themeId)  window.unlockSection('lessons',  false);
+    if(state.lesson)   window.unlockSection('practice', false);
+  } else {
+    // First visit — start fresh, journey bar shows step 1 as active
+    const firstBtn = document.getElementById(STEP_MAP['routeSelector']);
+    if(firstBtn) firstBtn.className = 'jstep jstep-active';
+  }
+})();
+
+/* ── Scroll-Reveal (IntersectionObserver) ── */
+const _revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('animate-in');
+      _revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.10, rootMargin: '0px 0px -30px 0px' });
+
+window.refreshReveal = function(){
+  const targets = document.querySelectorAll(
+    '.route-card:not(.animate-in), .lesson-card:not(.animate-in), .map-node:not(.animate-in), ' +
+    '.sidebar-card:not(.animate-in), .guide-card:not(.animate-in), ' +
+    '.daily-task-card:not(.animate-in), .mini-progress-card:not(.animate-in)'
+  );
+  targets.forEach(el => {
+    if(!el.classList.contains('reveal')) el.classList.add('reveal');
+    _revealObserver.observe(el);
+  });
+};
+window.refreshReveal();
+
+/* ── Active Nav Highlight ── */
+(function initNavHighlight(){
+  const navLinks = document.querySelectorAll('.main-nav a');
+  const sections = ['home','routeSelector','map','lessons','practice'];
+  const sectionEls = sections.map(id => document.getElementById(id)).filter(Boolean);
+
+  function updateNav(){
+    const scrollY = window.scrollY + 120;
+    let current = sections[0];
+    sectionEls.forEach(sec => {
+      if(sec.offsetTop <= scrollY) current = sec.id;
+    });
+    const navMap = { home:'#home', routeSelector:'#lessons', map:'#map', lessons:'#lessons', practice:'#practice' };
+    navLinks.forEach(a => {
+      a.classList.toggle('active-nav', a.getAttribute('href') === (navMap[current] || '#' + current));
+    });
+  }
+  window.addEventListener('scroll', updateNav, { passive: true });
+  updateNav();
+})();
