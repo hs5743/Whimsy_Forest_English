@@ -1,4 +1,4 @@
-const COURSE_DATA = {
+﻿const COURSE_DATA = {
   "grades": [
     {
       "id": "lower",
@@ -1757,8 +1757,9 @@ init();
 /* ══ Multi-View Navigation System ══════════════════════════ */
 (function initNavigation(){
 
-  /* ── History stack ── */
-  const navHistory = ['home'];
+  /* ── State ── */
+  const navHistory  = ['home'];
+  let   currentViewId = 'home';
 
   /* ── Breadcrumb text per view ── */
   function getBreadcrumb(viewId){
@@ -1766,9 +1767,9 @@ init();
     const theme  = (typeof currentTheme  === 'function') ? currentTheme()  : null;
     const lesson = state.lesson || null;
     const parts  = [];
-    if(grade && !['home','routeSelector'].includes(viewId)) parts.push('🌿 ' + grade.village);
-    if(theme && ['lessons','practice'].includes(viewId)) parts.push(theme.zh);
-    if(lesson && viewId === 'practice') parts.push(lesson.zh);
+    if(grade  && !['home','routeSelector'].includes(viewId)) parts.push('🌿 ' + grade.village);
+    if(theme  &&  ['lessons','practice'].includes(viewId))    parts.push(theme.zh);
+    if(lesson &&   viewId === 'practice')                     parts.push(lesson.zh);
     return parts.join(' › ');
   }
 
@@ -1777,66 +1778,55 @@ init();
     const backBtn      = document.getElementById('backBtn');
     const breadcrumbEl = document.getElementById('breadcrumbBar');
     if(!backBtn || !breadcrumbEl) return;
-
     if(viewId === 'home'){
       backBtn.hidden      = true;
       breadcrumbEl.hidden = true;
     } else {
       backBtn.hidden = false;
       const crumb = getBreadcrumb(viewId);
-      if(crumb){
-        breadcrumbEl.textContent = crumb;
-        breadcrumbEl.hidden = false;
-      } else {
-        breadcrumbEl.hidden = true;
-      }
+      if(crumb){ breadcrumbEl.textContent = crumb; breadcrumbEl.hidden = false; }
+      else      { breadcrumbEl.hidden = true; }
     }
   }
 
   /* ── Core navigateTo ── */
   window.navigateTo = function(viewId, isBack = false){
-    const currentId  = navHistory[navHistory.length - 1];
-    if(currentId === viewId) return;
+    /* Use currentViewId (not navHistory tail) to avoid bug after back-pop */
+    if(currentViewId === viewId) return;
 
-    const currentView = document.getElementById(currentId);
-    const nextView    = document.getElementById(viewId);
+    const fromView = document.getElementById(currentViewId);
+    const nextView = document.getElementById(viewId);
     if(!nextView) return;
 
-    /* Deactivate current view */
-    if(currentView) currentView.classList.remove('active');
+    /* Deactivate current */
+    if(fromView) fromView.classList.remove('active');
 
-    /* Remove leftover animation classes from next view */
+    /* Animate next */
     nextView.classList.remove('view-enter', 'view-enter-back');
-
-    /* Activate next view with animation */
-    void nextView.offsetWidth; /* force reflow so animation restarts */
+    void nextView.offsetWidth; /* force reflow */
     nextView.classList.add('active', isBack ? 'view-enter-back' : 'view-enter');
     nextView.addEventListener('animationend', () => {
       nextView.classList.remove('view-enter', 'view-enter-back');
     }, { once: true });
 
-    /* Scroll view to top */
+    /* Scroll to top */
     nextView.scrollTo({ top: 0, behavior: 'instant' });
 
-    /* Update navigation history */
-    if(isBack){
-      /* history already popped by navigateBack */
-    } else {
-      navHistory.push(viewId);
-    }
+    /* Update history */
+    if(!isBack) navHistory.push(viewId);
 
-    /* Update header */
+    /* Track current */
+    currentViewId = viewId;
     updateHeader(viewId);
-
-    /* Refresh card scroll-reveal */
     if(typeof window.refreshReveal === 'function') setTimeout(window.refreshReveal, 80);
   };
 
-  /* ── Back navigation ── */
+  /* ── Back navigation (fix: track current before pop) ── */
   window.navigateBack = function(){
     if(navHistory.length <= 1) return;
-    navHistory.pop();
+    navHistory.pop(); /* remove current from history */
     const prevId = navHistory[navHistory.length - 1];
+    /* currentViewId still holds old view, so navigateTo won't early-return */
     window.navigateTo(prevId, true);
   };
 
@@ -1844,7 +1834,6 @@ init();
   document.getElementById('backBtn')?.addEventListener('click', window.navigateBack);
 
   document.getElementById('brandBtn')?.addEventListener('click', () => {
-    /* Go home, clear history */
     navHistory.length = 0;
     navHistory.push('home');
     window.navigateTo('home', true);
@@ -1854,23 +1843,9 @@ init();
     window.navigateTo('routeSelector');
   });
 
-  /* ── Returning user: silently restore deepest visited view ── */
-  if(state.gradeId){
-    /* Build the history path they had */
-    const path = ['routeSelector', 'map'];
-    if(state.themeId) path.push('lessons');
-    /* Note: don't auto-restore practice — user should choose a lesson fresh */
-
-    /* Switch silently (no animation) to deepest view */
-    const deepView = path[path.length - 1];
-    document.getElementById('home')?.classList.remove('active');
-    document.getElementById(deepView)?.classList.add('active');
-    path.forEach(v => navHistory.push(v));
-    updateHeader(deepView);
-  } else {
-    /* Fresh visit — home view active (already set in HTML) */
-    updateHeader('home');
-  }
+  /* ── Returning user: always start fresh from home ──
+     (avoids the "stuck on map" UX issue; user can tap through quickly) */
+  updateHeader('home');
 })();
 
 /* ══ Scroll-Reveal (IntersectionObserver) ═════════════════ */
@@ -1896,4 +1871,3 @@ window.refreshReveal = function(){
   });
 };
 window.refreshReveal();
-
