@@ -3,113 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#75b965" />
-  <meta name="description" content="Whimsy Forest English 童趣森林英語學習樂園，專為國小低、中、高年級設計的英語會話口說練習平台。結合情境故事地圖與語音辨識跟讀技術，讓孩子們在活潑的森林冒險中開口說英語，輕鬆累積 XP 與學習徽章！" />
-  <title>Whimsy Forest English｜童趣森林英語學習樂園 - 國小英語口說對話練習</title>
+  <meta name="theme-color" content="hsl(118,58%,48%)" />
+  <meta name="description" content="Whimsy Forest English 童趣森林英語學習樂園，專為國小低、中、高年級設計的英語會話口說練習平台。" />
+  <title>Whimsy Forest English｜童趣森林英語學習樂園</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@700;800&family=Quicksand:wght@500;700;900&family=Noto+Sans+TC:wght@500;700;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="app">
-    <header class="site-header">
-      <a class="brand" href="#home" aria-label="回到首頁">
+<div class="app">
+
+  <!-- ═══ App Header ═══════════════════════════════════════ -->
+  <header class="site-header" id="siteHeader">
+    <!-- Left: back button -->
+    <div class="header-start">
+      <button class="back-btn" id="backBtn" hidden type="button" aria-label="返回上一頁">
+        <span class="back-icon">←</span>
+        <span class="back-label">返回</span>
+      </button>
+    </div>
+
+    <!-- Center: brand + breadcrumb -->
+    <div class="header-center">
+      <button class="brand" id="brandBtn" type="button" aria-label="回到首頁">
         <span class="brand-leaf">🍃</span>
-        <span><strong>Whimsy Forest</strong><small>English Learning Village</small></span>
-      </a>
+        <strong class="brand-name">Whimsy Forest</strong>
+      </button>
+      <div class="breadcrumb-bar" id="breadcrumbBar" hidden aria-label="目前位置"></div>
+    </div>
 
-      <nav class="main-nav" aria-label="主要導覽">
-        <a href="#home">首頁</a>
-        <a href="#map">學習地圖</a>
-        <a href="#lessons">課程</a>
-        <a href="#practice">口說練習</a>
-      </nav>
+    <!-- Right: XP + Level -->
+    <div class="header-end header-progress">
+      <span>⭐ <strong id="headerXp">0</strong> XP</span>
+      <span>Lv. <strong id="headerLevel">1</strong></span>
+    </div>
+  </header>
 
-      <div class="header-progress">
-        <span>⭐ <strong id="headerXp">0</strong> XP</span>
-        <span>Lv. <strong id="headerLevel">1</strong></span>
-      </div>
+  <!-- ═══ View Container ═══════════════════════════════════ -->
+  <div class="view-container" id="viewContainer">
 
-      <!-- 學習旅程步驟條 -->
-      <div class="journey-bar" id="journeyBar" aria-label="學習步驟">
-        <div class="jstep jstep-done" data-target="home">
-          <span class="jstep-icon">🌿</span>
-          <span class="jstep-label">踏入森林</span>
-        </div>
-        <span class="jarrow" aria-hidden="true">›</span>
-        <button class="jstep jstep-locked" id="jstep-routeSelector" data-target="routeSelector" type="button">
-          <span class="jstep-icon">①</span>
-          <span class="jstep-label">選擇路線</span>
-        </button>
-        <span class="jarrow" aria-hidden="true">›</span>
-        <button class="jstep jstep-locked" id="jstep-map" data-target="map" type="button">
-          <span class="jstep-icon">②</span>
-          <span class="jstep-label">探索地圖</span>
-        </button>
-        <span class="jarrow" aria-hidden="true">›</span>
-        <button class="jstep jstep-locked" id="jstep-lessons" data-target="lessons" type="button">
-          <span class="jstep-icon">③</span>
-          <span class="jstep-label">選擇課程</span>
-        </button>
-        <span class="jarrow" aria-hidden="true">›</span>
-        <button class="jstep jstep-locked" id="jstep-practice" data-target="practice" type="button">
-          <span class="jstep-icon">④</span>
-          <span class="jstep-label">口說練習</span>
-        </button>
-      </div>
-    </header>
-
-    <main>
-      <section class="forest-entrance" id="home" data-step="home">
-        <div class="sky-cloud cloud-one"></div>
-        <div class="sky-cloud cloud-two"></div>
-        <div class="tree tree-left" aria-hidden="true">
-          <span class="tree-crown"></span><span class="tree-trunk"></span>
-        </div>
-        <div class="tree tree-right" aria-hidden="true">
-          <span class="tree-crown"></span><span class="tree-trunk"></span>
-        </div>
-
+    <!-- ── VIEW 1: Home ──────────────────────────────────── -->
+    <section class="view active" id="home" aria-label="首頁">
+      <div class="forest-entrance">
         <div class="entrance-copy">
           <p class="eyebrow">WELCOME TO WHIMSY FOREST</p>
-          <h1>童趣森林英語學習樂園</h1>
-          <p class="entrance-lead">
-            走進森林村莊，選擇適合自己的路線，從生活會話、情境表達到意見分享，
-            一步一步建立英語口說能力與自信。
-          </p>
-
+          <h1>童趣森林<br>英語學習樂園</h1>
+          <p class="entrance-lead">走進森林村莊，一步一步建立英語口說能力與自信！</p>
           <div class="feature-pills">
             <span>🎧 自然聆聽</span>
             <span>🎙️ 跟讀練習</span>
             <span>🎭 角色扮演</span>
             <span>⭐ 闖關進度</span>
           </div>
-
           <div class="entrance-actions">
-            <button class="primary-button" type="button" data-scroll="#routeSelector">選擇學習路線</button>
-            <button class="secondary-button" type="button" data-scroll="#practice">前往口說小屋</button>
+            <button class="primary-button" type="button" id="startAdventureBtn">
+              🌿 開始冒險！
+            </button>
           </div>
         </div>
 
-        <div class="entrance-scene" aria-label="森林村莊入口場景">
-          <div class="sun"></div>
-          <div class="hill hill-back"></div>
-          <div class="hill hill-front"></div>
-          <div class="village-path"></div>
-
-          <div class="cottage cottage-one">
-            <span class="roof"></span><span class="house"></span><span class="door"></span>
-          </div>
-          <div class="cottage cottage-two">
-            <span class="roof"></span><span class="house"></span><span class="door"></span>
-          </div>
-
-          <div class="welcome-sign">
-            <strong>Whimsy Forest</strong>
-            <span>Let’s learn together!</span>
-          </div>
-
+        <div class="entrance-scene" aria-hidden="true">
           <div class="entrance-mascots">
             <div class="mascot-figure">
               <img src="assets/fox-guide.png" alt="低年級吉祥物 Foxy" />
@@ -122,24 +76,25 @@
             </div>
           </div>
         </div>
-        <!-- 引導學生往下走 -->
-        <div class="hero-scroll-hint" aria-hidden="true">
-          <span>選擇學習路線，開始森林冒險！</span>
-          <span class="scroll-arrow">↓</span>
-        </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="route-section section-locked" id="routeSelector" data-step="routeSelector">
-        <div class="section-heading centered">
+    <!-- ── VIEW 2: Route / Grade Selection ───────────────── -->
+    <section class="view" id="routeSelector" aria-label="選擇路線">
+      <div class="view-inner">
+        <div class="view-hero centered">
           <span class="wood-label">CHOOSE YOUR PATH</span>
           <h2>選擇你的森林學習路線</h2>
-          <p>每條路線都有固定的吉祥物、色彩與課程難度，讓學生能清楚辨識自己的學習階段。</p>
+          <p>選一個適合你的村莊，跟著吉祥物一起學英語！</p>
         </div>
         <div class="route-card-grid" id="gradeCards"></div>
-      </section>
+      </div>
+    </section>
 
-      <section class="map-section section-locked" id="map" data-step="map">
-        <div class="section-heading">
+    <!-- ── VIEW 3: Story Map ──────────────────────────────── -->
+    <section class="view" id="map" aria-label="學習地圖">
+      <div class="view-inner">
+        <div class="view-hero">
           <div>
             <span class="wood-label">FOREST STORY MAP</span>
             <h2 id="mapTitle">幼苗村學習地圖</h2>
@@ -151,7 +106,6 @@
         <div class="story-map">
           <aside class="map-status-panel">
             <div class="guide-card" id="guideCard"></div>
-
             <div class="daily-task-card">
               <span class="task-icon">📋</span>
               <div>
@@ -160,7 +114,6 @@
               </div>
               <span class="task-reward">+20 XP</span>
             </div>
-
             <div class="mini-progress-card">
               <div class="mini-progress-top">
                 <strong>旅程進度</strong>
@@ -183,14 +136,17 @@
             <div class="map-nodes" id="themeMapNodes"></div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section class="lesson-section section-locked" id="lessons" data-step="lessons">
-        <div class="section-heading">
+    <!-- ── VIEW 4: Lesson Cards ───────────────────────────── -->
+    <section class="view" id="lessons" aria-label="課程清單">
+      <div class="view-inner">
+        <div class="view-hero">
           <div>
             <span class="wood-label">LESSON CARDS</span>
             <h2 id="lessonHeading">幼苗村課程卡片</h2>
-            <p id="lessonSubheading">課程卡片會依年級路線、主題與吉祥物呈現一致的視覺。</p>
+            <p id="lessonSubheading">選一堂課，開始練習！</p>
           </div>
           <div class="lesson-filter-status">
             <span id="gradeStatus">低年級</span>
@@ -198,12 +154,14 @@
             <span id="lessonCount">10 堂課</span>
           </div>
         </div>
-
         <div class="lesson-card-grid" id="lessonGrid"></div>
-      </section>
+      </div>
+    </section>
 
-      <section class="practice-section section-locked" id="practice" data-step="practice">
-        <div class="section-heading">
+    <!-- ── VIEW 5: Speaking Practice ─────────────────────── -->
+    <section class="view" id="practice" aria-label="口說練習">
+      <div class="view-inner">
+        <div class="view-hero">
           <div>
             <span class="wood-label">SPEAKING COTTAGE</span>
             <h2>森林會話練習小屋</h2>
@@ -247,9 +205,7 @@
                 <div class="role-portrait"><img id="speakerImageA" src="assets/fox-guide.png" alt="角色 A" /></div>
                 <strong>Role A</strong>
               </div>
-
               <div class="dialogue-list" id="speechStack"></div>
-
               <div class="role-column">
                 <div class="role-portrait"><img id="speakerImageB" src="assets/rabbit-guide.png" alt="角色 B" /></div>
                 <strong>Role B</strong>
@@ -292,11 +248,9 @@
                 </div>
                 <span class="level-pill">Lv. <strong id="levelValue">1</strong></span>
               </div>
-
               <div class="xp-row"><span id="xpText">0 / 100 XP</span><button id="resetButton" type="button">重設</button></div>
               <div class="progress-track"><span id="progressFill"></span></div>
               <div class="star-row" id="stars"><span>☆</span><span>☆</span><span>☆</span></div>
-
               <div class="badge-grid">
                 <div class="badge locked" id="badgeMap">🗺️<small>Explorer</small></div>
                 <div class="badge locked" id="badgeListener">🎧<small>Listener</small></div>
@@ -311,17 +265,14 @@
             </section>
           </aside>
         </div>
-      </section>
-    </main>
+      </div>
+    </section>
 
-    <footer>
-      <span>🌳 Whimsy Forest English V4.1</span>
-      <span>原生 UI 重建版｜概念圖只作設計參考</span>
-    </footer>
+  </div><!-- /view-container -->
 
-    <div class="toast" id="toast" aria-live="polite"></div>
-  </div>
+  <div class="toast" id="toast" aria-live="polite"></div>
+</div><!-- /app -->
 
-  <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
