@@ -1388,3 +1388,330 @@ footer::before {
   footer span { display: block; text-align: center; margin: 4px 0; }
   footer::before { display: none; }
 }
+
+/* =====================================================
+   V5.3 — 校園森林對話版（選定視覺方向 2）
+   保留既有元件與互動，重新整理首頁構圖、色彩與響應式呈現。
+   ===================================================== */
+:root {
+  --green: #62a85c;
+  --green-dark: #337446;
+  --green-deeper: #234f37;
+  --green-light: #e6f2df;
+  --blue: #66a8d7;
+  --blue-dark: #3476a8;
+  --blue-light: #e5f2fa;
+  --gold: #efb75b;
+  --gold-dark: #a9642c;
+  --gold-light: #fff2cf;
+  --pink: #e98378;
+  --purple: #8c7ab9;
+  --wood: #9b673d;
+  --wood-dark: #68452c;
+  --ink: #29463b;
+  --muted: #61776d;
+  --cream: #fbf8ed;
+  --paper: rgba(255, 253, 245, 0.97);
+  --shadow-sm: 0 4px 14px rgba(39, 72, 55, 0.1);
+  --shadow-md: 0 14px 34px rgba(39, 72, 55, 0.15);
+  --shadow-lg: 0 22px 50px rgba(39, 72, 55, 0.18);
+}
+
+body {
+  background: #dcebd9;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+.material-symbols-rounded {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  vertical-align: -0.16em;
+}
+
+.app {
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  border: 0;
+  border-radius: 0;
+  background: var(--cream);
+  box-shadow: 0 24px 70px rgba(32, 66, 48, 0.2);
+}
+
+.site-header {
+  grid-template-columns: 270px 1fr auto;
+  grid-template-rows: auto;
+  gap: 22px;
+  padding: 14px clamp(20px, 4vw, 64px);
+  background: rgba(255, 253, 245, 0.96);
+  border-bottom: 1px solid rgba(75, 104, 82, 0.16);
+  box-shadow: 0 5px 20px rgba(39, 72, 55, 0.1);
+}
+
+.journey-bar { display: none; }
+.brand { gap: 11px; }
+.brand-mark { color: var(--green-dark); font-size: 2.25rem; }
+.brand strong { color: var(--green-deeper); font-size: 1.28rem; line-height: 1.05; }
+.brand small { color: var(--wood); font-size: 0.72rem; letter-spacing: 0.04em; }
+
+.main-nav {
+  gap: clamp(4px, 1.5vw, 20px);
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.main-nav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 10px;
+  border-radius: 10px;
+  color: #49695a;
+}
+.main-nav a .material-symbols-rounded { color: var(--green-dark); font-size: 1.25rem; }
+.main-nav a:hover,
+.main-nav a.active-nav { background: #eaf3e3; color: var(--green-deeper); box-shadow: none; }
+
+.header-progress span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 12px;
+  background: #f4edce;
+  border: 1px solid #e2d7aa;
+}
+.header-progress span:first-child .material-symbols-rounded { color: #dda83e; }
+
+main { padding: 0; }
+section { margin-bottom: 0; }
+
+.forest-entrance {
+  min-height: 680px;
+  border: 0;
+  border-radius: 0;
+  background: url("assets/bg-schoolyard-forest.png") no-repeat center center;
+  background-size: cover;
+  box-shadow: none;
+}
+.forest-entrance::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 251, 226, 0.12);
+  pointer-events: none;
+}
+.entrance-scene,
+.hero-scroll-hint { display: none; }
+.entrance-copy {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 64px 24px 28px;
+  text-align: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.eyebrow {
+  display: inline-block;
+  margin-bottom: 12px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  color: var(--green-deeper);
+  background: rgba(247, 241, 198, 0.9);
+  border: 1px solid rgba(113, 137, 78, 0.28);
+  letter-spacing: 0.18em;
+}
+.entrance-copy h1 {
+  color: #234f37;
+  font-size: clamp(2.45rem, 4vw, 3.3rem);
+  line-height: 1.05;
+  text-shadow: 0 2px 0 rgba(255, 255, 255, 0.8), 0 8px 24px rgba(37, 78, 55, 0.12);
+}
+.entrance-lead {
+  max-width: 620px;
+  margin: 13px auto 0;
+  color: #456559;
+  font-size: 1.08rem;
+  font-weight: 700;
+}
+.feature-pills { justify-content: center; margin-top: 15px; }
+.feature-pills span {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  background: rgba(255, 253, 239, 0.9);
+  border: 1px solid rgba(72, 115, 79, 0.22);
+  box-shadow: 0 4px 12px rgba(39, 72, 55, 0.1);
+}
+.feature-pills span:nth-child(1) .material-symbols-rounded { color: var(--blue-dark); }
+.feature-pills span:nth-child(2) .material-symbols-rounded { color: var(--pink); }
+.feature-pills span:nth-child(3) .material-symbols-rounded { color: var(--green-dark); }
+.entrance-actions { justify-content: center; margin-top: 18px; }
+.entrance-actions { display: none; }
+.primary-button {
+  padding: 13px 24px;
+  background: #4f9857;
+  box-shadow: 0 5px 0 #2e673a, 0 10px 24px rgba(39, 97, 52, 0.22);
+}
+.primary-button:hover { box-shadow: 0 7px 0 #2e673a, 0 15px 28px rgba(39, 97, 52, 0.26); }
+
+.route-section {
+  position: relative;
+  z-index: 8;
+  margin-top: -292px;
+  padding: 0 clamp(24px, 5vw, 78px) 44px;
+  background: transparent;
+}
+.route-section > .section-heading { display: none; }
+.route-card-grid {
+  max-width: 1120px;
+  margin: 0 auto;
+  gap: clamp(14px, 2vw, 24px);
+}
+.route-card {
+  min-height: 390px;
+  overflow: visible;
+  border: 2px solid rgba(88, 103, 78, 0.25);
+  border-top-width: 6px;
+  border-radius: 26px;
+  background: rgba(255, 252, 236, 0.95) !important;
+  box-shadow: 0 16px 28px rgba(45, 72, 54, 0.19), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+.route-card.lower { border-top-color: var(--blue); }
+.route-card.middle { border-top-color: var(--green); }
+.route-card.upper { border-top-color: #e59a56; }
+.route-card:hover,
+.route-card.middle:hover,
+.route-card.upper:hover {
+  transform: translateY(-7px);
+  box-shadow: 0 22px 38px rgba(45, 72, 54, 0.24);
+}
+.route-card:focus-visible {
+  outline: 4px solid rgba(57, 126, 170, 0.38);
+  outline-offset: 4px;
+}
+.route-card-top {
+  display: block;
+  padding: 0 18px 8px;
+  text-align: center;
+}
+.route-card img {
+  width: 190px;
+  height: 190px;
+  margin: -92px auto -4px;
+  object-fit: contain;
+  filter: drop-shadow(0 12px 8px rgba(48, 69, 52, 0.22));
+}
+.route-card:hover img { transform: translateY(-5px) scale(1.025); }
+.route-card .wood-label {
+  padding: 4px 11px;
+  color: var(--wood-dark);
+  background: #f5e6bb;
+  border: 1px solid #dfca91;
+  border-radius: 999px;
+  box-shadow: none;
+  font-size: 0.7rem;
+}
+.route-card h3 { margin: 5px 0 0; color: var(--green-deeper); font-size: 2.2rem; line-height: 1.1; }
+.route-card-top strong { color: var(--wood-dark); }
+.route-card-top p { margin-top: 5px; color: var(--muted); font-size: 0.9rem; }
+.route-card-body { padding: 0 18px 18px; text-align: center; }
+.route-card-body > p { min-height: 70px; color: #536c61; font-size: 0.9rem; }
+.route-tags { justify-content: center; margin: 10px 0 13px; }
+.route-tags span { padding: 5px 9px; background: #f5f0dd; border: 1px solid #e5dcc0; font-size: 0.78rem; box-shadow: none; }
+.route-button { padding: 11px; box-shadow: 0 4px 0 #2c6339; }
+.route-button { display: block; }
+.route-card.lower .route-button { background: var(--blue-dark); box-shadow: 0 4px 0 #245879; }
+.route-card.middle .route-button { background: var(--green-dark); }
+.route-card.upper .route-button { background: #c86f36; box-shadow: 0 4px 0 #874520; }
+
+.map-section,
+.lesson-section,
+.practice-section {
+  padding: 54px clamp(20px, 5vw, 72px);
+  background: #f8f5e9;
+  border-top: 1px solid #e5dfc9;
+}
+.lesson-section { background: #eef5e8; }
+.practice-section { background: #f8f5e9; }
+.section-heading h2 { color: var(--green-deeper); }
+.wood-label,
+.small-button {
+  background: var(--wood);
+  box-shadow: 0 4px 0 var(--wood-dark);
+}
+.guide-card, .daily-task-card, .mini-progress-card, .practice-card, .sidebar-card,
+.lesson-card { border: 1px solid rgba(75, 104, 82, 0.18); box-shadow: var(--shadow-sm); }
+
+button:focus-visible,
+a:focus-visible,
+select:focus-visible {
+  outline: 3px solid rgba(56, 126, 170, 0.42);
+  outline-offset: 3px;
+}
+
+footer {
+  background: #244f38;
+  border-top: 0;
+}
+footer::before { display: none; }
+
+@media (max-width: 1100px) {
+  .site-header { grid-template-columns: 220px 1fr auto; justify-items: stretch; }
+  .main-nav a { padding-inline: 7px; }
+  .main-nav a span:last-child { display: none; }
+  .route-card img { width: 170px; height: 175px; }
+  .route-card-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+@media (max-width: 760px) {
+  .site-header {
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+  .main-nav { grid-column: 1 / -1; grid-row: 2; justify-self: stretch; justify-content: space-between; }
+  .main-nav a { flex: 1; justify-content: center; }
+  .main-nav a span:last-child { display: inline; font-size: 0.78rem; }
+  .header-progress { gap: 5px; }
+  .header-progress span { padding: 7px 9px; font-size: 0.82rem; }
+  .forest-entrance { min-height: 600px; }
+  .entrance-copy { margin: 0 auto; padding: 45px 18px 24px; }
+  .entrance-copy h1 { font-size: clamp(2.25rem, 11vw, 3.4rem); }
+  .entrance-lead { font-size: 0.98rem; }
+  .route-section { margin-top: -190px; padding: 0 18px 38px; }
+  .route-card-grid { grid-template-columns: 1fr; gap: 116px; }
+  .route-card { min-height: 350px; }
+  .route-card img { width: 185px; height: 185px; margin-top: -92px; }
+  .route-card-body > p { min-height: 0; }
+  .map-section, .lesson-section, .practice-section { padding: 40px 16px; }
+  .map-canvas { min-height: 1040px; }
+  .map-node {
+    left: 50% !important;
+    width: calc(100% - 32px);
+    transform: translateX(-50%);
+  }
+  .map-node:nth-child(1) { top: 50px !important; }
+  .map-node:nth-child(2) { top: 240px !important; }
+  .map-node:nth-child(3) { top: 430px !important; }
+  .map-node:nth-child(4) { top: 620px !important; }
+  .map-node:nth-child(5) { top: 810px !important; }
+  .map-node:hover { transform: translateX(-50%) translateY(-4px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -2,14 +2,14 @@ const COURSE_DATA = {
   "grades": [
     {
       "id": "lower",
-      "name": "Lower Grades",
-      "zh": "低年級",
-      "village": "幼苗村",
-      "icon": "🌱",
-      "mascot": "Foxy",
-      "mascotZh": "小狐狸 Foxy",
-      "asset": "assets/fox-guide.png",
-      "subtitle": "短句、圖像提示、慢速跟讀",
+      "name": "Foundation",
+      "zh": "基礎",
+      "village": "基礎對話",
+      "icon": "chat",
+      "mascot": "Magpie",
+      "mascotZh": "喜鵲 小喜",
+      "asset": "assets/magpie-guide.png",
+      "subtitle": "短句對話、慢速跟讀、開口建立信心",
       "story": "從生活中的問候、家人與教室對話開始，慢慢建立開口說英語的信心。",
       "themes": [
         {
@@ -391,14 +391,14 @@ const COURSE_DATA = {
     },
     {
       "id": "middle",
-      "name": "Middle Grades",
-      "zh": "中年級",
-      "village": "綠葉鎮",
-      "icon": "🍃",
-      "mascot": "Bunny",
-      "mascotZh": "小兔 Bunny",
-      "asset": "assets/rabbit-guide.png",
-      "subtitle": "完整回答、情境對話、角色扮演",
+      "name": "Developing",
+      "zh": "進階",
+      "village": "進階對話",
+      "icon": "forum",
+      "mascot": "Taiwan Barbet",
+      "mascotZh": "五色鳥 小五",
+      "asset": "assets/barbet-guide.png",
+      "subtitle": "情境問答、完整回應、角色對話",
       "story": "進入更多生活情境，練習完整回應、邀請他人與表達需求。",
       "themes": [
         {
@@ -780,14 +780,14 @@ const COURSE_DATA = {
     },
     {
       "id": "upper",
-      "name": "Upper Grades",
-      "zh": "高年級",
-      "village": "大樹城",
-      "icon": "🌳",
-      "mascot": "Ollie",
-      "mascotZh": "貓頭鷹 Ollie",
-      "asset": "assets/owl-guide.png",
-      "subtitle": "表達想法、多輪對話、任務挑戰",
+      "name": "Challenge",
+      "zh": "挑戰",
+      "village": "挑戰對話",
+      "icon": "psychology_alt",
+      "mascot": "Owl",
+      "mascotZh": "貓頭鷹 小奧",
+      "asset": "assets/owl-school-guide.png",
+      "subtitle": "表達想法、說明理由、多輪對話",
       "story": "挑戰意見表達、問題解決與思辨任務，讓英語成為更有力量的溝通工具。",
       "themes": [
         {
@@ -1280,11 +1280,11 @@ const els = {
 };
 
 const nodePositions = [
-  {left:"7%", top:"12%", icon:"🌼"},
-  {left:"39%", top:"8%", icon:"🏡"},
-  {left:"67%", top:"19%", icon:"🏫"},
-  {left:"16%", top:"48%", icon:"🍎"},
-  {left:"58%", top:"55%", icon:"🌉"}
+  {left:"7%", top:"12%", icon:"local_florist"},
+  {left:"39%", top:"8%", icon:"cottage"},
+  {left:"67%", top:"19%", icon:"school"},
+  {left:"16%", top:"48%", icon:"nutrition"},
+  {left:"58%", top:"55%", icon:"route"}
 ];
 
 function grades(){ return COURSE_DATA.grades; }
@@ -1359,7 +1359,7 @@ function renderProgress(){
   els.progressFill.style.width = `${xp}%`;
   const starCount = Math.min(3, Math.floor(state.completed / 3));
   [...els.stars.children].forEach((star,i) => {
-    star.textContent = i < starCount ? "★" : "☆";
+    star.textContent = i < starCount ? "star" : "star_outline";
     star.classList.toggle('lit', i < starCount);
   });
   [["map",els.badgeMap],["listener",els.badgeListener],["speaker",els.badgeSpeaker]].forEach(([key,el])=>{
@@ -1375,6 +1375,9 @@ function renderGradeCards(){
     const total = grade.themes.reduce((sum,t)=>sum+t.lessons.length,0);
     const card = document.createElement("article");
     card.className = `route-card ${grade.id}`;
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", `選擇${grade.zh}對話階段`);
     card.innerHTML = `
       <div class="route-card-top">
         <img src="${grade.asset}" alt="${grade.mascotZh}">
@@ -1388,14 +1391,20 @@ function renderGradeCards(){
       <div class="route-card-body">
         <p>${grade.story}</p>
         <div class="route-tags">
-          <span>${grade.themes.length} 個主題</span>
+          <span>${grade.themes.length} 個對話主題</span>
           <span>${total} 堂課</span>
-          <span>${grade.mascotZh}</span>
+          <span>可自由選擇</span>
         </div>
-        <button class="route-button" type="button">進入 ${grade.village}</button>
+        <span class="route-button">選擇${grade.zh}階段</span>
       </div>
     `;
     card.addEventListener("click", () => selectGrade(grade.id, true));
+    card.addEventListener("keydown", event => {
+      if(event.key === "Enter" || event.key === " "){
+        event.preventDefault();
+        selectGrade(grade.id, true);
+      }
+    });
     els.gradeCards.appendChild(card);
   });
 }
@@ -1465,10 +1474,10 @@ function renderMapNodes(){
     btn.style.top = pos.top;
     const completed = theme.lessons.filter(l=>state.completedLessons.includes(l.id)).length;
     btn.innerHTML = `
-      <span class="node-icon">${pos.icon}</span>
+      <span class="node-icon material-symbols-rounded" aria-hidden="true">${pos.icon}</span>
       <strong>${theme.zh}</strong>
       <span>${theme.scene}</span>
-      <small>⭐ ${completed} / ${theme.lessons.length}</small>
+      <small><span class="material-symbols-rounded" aria-hidden="true">star</span>${completed} / ${theme.lessons.length}</small>
     `;
     btn.addEventListener("click",()=>{
       state.themeId = theme.id;
@@ -1547,7 +1556,7 @@ function openLesson(lesson){
 function syncSpeakerImages(){
   const grade = currentGrade();
   els.speakerImageA.src = grade.asset;
-  els.speakerImageB.src = grade.id==="lower" ? "assets/rabbit-guide.png" : grade.id==="middle" ? "assets/fox-guide.png" : "assets/rabbit-guide.png";
+  els.speakerImageB.src = grade.id==="lower" ? "assets/barbet-guide.png" : grade.id==="middle" ? "assets/magpie-guide.png" : "assets/barbet-guide.png";
 }
 
 function renderSpeechStack(){
@@ -1564,7 +1573,7 @@ function renderSpeechStack(){
   }
 
   if(!state.lesson){
-    els.speechStack.innerHTML = `<div class="speech-bubble"><span class="speaker-label">A:</span><div><div class="line-main">請先從課程卡片選擇一堂課</div><div class="line-sub">Choose a lesson to begin.</div></div><span>🌟</span></div>`;
+    els.speechStack.innerHTML = `<div class="speech-bubble"><span class="speaker-label">A:</span><div><div class="line-main">請先從課程卡片選擇一堂課</div><div class="line-sub">Choose a lesson to begin.</div></div><span class="material-symbols-rounded" aria-hidden="true">auto_awesome</span></div>`;
     els.dialogueCounter.textContent = "1 / 4";
     return;
   }
@@ -1580,7 +1589,7 @@ function renderSpeechStack(){
         <div class="line-main">${hiddenForRole ? "__________" : line.text}</div>
         <div class="line-sub">${hiddenForRole ? "輪到你自己說這一句" : state.showTranslation ? line.translation : "Tap to listen"}</div>
       </div>
-      <span>🔊</span>
+      <span class="material-symbols-rounded" aria-hidden="true">volume_up</span>
     `;
     bubble.addEventListener("click",()=>{
       state.lineIndex = index;
@@ -1806,18 +1815,31 @@ function bindEvents(){
     renderMapNodes();
 
     // Re-lock sections and reset journey bar
-    ['routeSelector','map','lessons','practice'].forEach(id => {
+    ['map','lessons','practice'].forEach(id => {
       const sec = document.getElementById(id);
       if(sec){
         sec.classList.remove('section-unlocking');
         sec.classList.add('section-locked');
       }
       const btn = document.getElementById('jstep-' + id);
-      if(btn) btn.className = 'jstep jstep-locked';
+      if(btn){
+        btn.className = 'jstep jstep-locked';
+        btn.disabled = true;
+        btn.setAttribute('aria-disabled', 'true');
+      }
     });
     // Mark first step as active again
     const firstBtn = document.getElementById('jstep-routeSelector');
-    if(firstBtn) firstBtn.className = 'jstep jstep-active';
+    if(firstBtn){
+      firstBtn.className = 'jstep jstep-active';
+      firstBtn.disabled = false;
+      firstBtn.removeAttribute('aria-disabled');
+    }
+    try {
+      localStorage.removeItem("wfv41-gradeId");
+      localStorage.removeItem("wfv41-themeId");
+      localStorage.removeItem("wfv41-lessonId");
+    } catch {}
     // Show scroll hint again
     document.querySelector('.hero-scroll-hint')?.classList.remove('hint-hidden');
     // Scroll to top
@@ -1860,17 +1882,22 @@ init();
       const isLocked = sec ? sec.classList.contains('section-locked') : true;
       if(isLocked){
         el.className = 'jstep jstep-locked';
+        el.disabled = true;
+        el.setAttribute('aria-disabled', 'true');
       } else if(i < idx){
         el.className = 'jstep jstep-done';
         el.disabled = false;
+        el.removeAttribute('aria-disabled');
         el.style.cursor = 'pointer';
       } else if(i === idx){
         el.className = 'jstep jstep-active';
         el.disabled = false;
+        el.removeAttribute('aria-disabled');
         el.style.cursor = 'pointer';
       } else {
         el.className = 'jstep jstep-done';
         el.disabled = false;
+        el.removeAttribute('aria-disabled');
         el.style.cursor = 'pointer';
       }
     });
@@ -1933,16 +1960,21 @@ init();
   });
 
   /* Returning user: restore unlock state based on saved progress */
-  if(state.gradeId){
+  window.unlockSection('routeSelector', false);
+  const hasSavedStage = Boolean(localStorage.getItem("wfv41-gradeId"));
+  if(hasSavedStage){
     // Already selected a grade in a previous session
-    window.unlockSection('routeSelector', false);
     window.unlockSection('map', false);
     if(state.themeId)  window.unlockSection('lessons',  false);
     if(state.lesson)   window.unlockSection('practice', false);
   } else {
     // First visit — start fresh, journey bar shows step 1 as active
     const firstBtn = document.getElementById(STEP_MAP['routeSelector']);
-    if(firstBtn) firstBtn.className = 'jstep jstep-active';
+    if(firstBtn){
+      firstBtn.className = 'jstep jstep-active';
+      firstBtn.disabled = false;
+      firstBtn.removeAttribute('aria-disabled');
+    }
   }
 })();
 
